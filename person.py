@@ -20,10 +20,10 @@ class  Person(object):
         #they will survive the infection, become vaccinated and won't carry the infection anymore
         if self.infection != None:
             ran_num = random.random()
-            # print("ran_num")
-            # print(ran_num)
+
             if ran_num < self.infection.mortality_rate:
                 self.is_alive = False
+                self.infection = None
             else:
                 self.is_vaccinated = True
                 self.infection = None
