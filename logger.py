@@ -53,28 +53,50 @@ class Logger(object):
     def __init__(self, file_name):
         # TODO:  Finish this initialization method.  The file_name passed should be the
         # full file name of the file that the logs will be written to.
-        self.file_name = 'epidemic.txt'
+        self.file_name = file_name
 
     #We run this function right when we run our simulation to start writing the parameters of our simulation
     def write_metadata(self, pop_size, vacc_percentage, virus_name, mortality_rate,
-                       basic_repro_num):
+                       virus_spread_rate):
 
-        with open(self.file_name, 'r+') as f:
+        f = open('%s' % self.file_name, 'w')
+        # print('opened file 1:', self.file_name)
+        f.write("%s people in our population, %s people got vaccinated. %s's mortality rate and spread rate are %s and %s\n" % (pop_size, vacc_percentage, virus_name, mortality_rate, virus_spread_rate))
+        f.close()
 
-        # TODO: Finish this method.  The simulation class should use this method
-        # immediately upon creation, to log the specific parameters of the simulation
-        # as the first line of the file.  This line of metadata should be tab-delimited
-        # (each item separated by a '\t' character).
-        # NOTE: Since this is the first method called, it will create the text file
-        # that we will store all logs in.  Be sure to use 'w' mode when you open the file.
-        # For all other methods, we'll want to use the 'a' mode to append our new log to the end,
-        # since 'w' overwrites the file.
-        # NOTE: Make sure to end every line with a '/n' character to ensure that each
-        # event logged ends up on a separate line!
+
         pass
     #Run this function in the exposure function I wrote, get the infected person first, pass it in this method, and keep getting person2 from the random person. Then we check if that person is infected already or if that person is vaccinated.
-    def log_interaction(self, person1, person2, did_infect=None,
-                        person2_vacc=None, person2_sick=None):
+
+    def log_infected(self, person1, person2):
+        with open('%s.txt' % self.file_name, 'a') as f:
+            f.write("person %s infected person %s \n" % (person1._id, person2._id))
+
+    def log_vaccinated(self, person1, person2):
+        with open('%s.txt' % self.file_name, 'a') as f:
+            f.write("person %s didn't infect person %s because person %s was vaccinated \n" % (person1._id, person2._id, person2._id))
+
+    def log_already_infected(self, person1, person2):
+        with open('%s.txt' % self.file_name, 'a') as f:
+            f.write("person %s didn't infect person %s because person %s was already infected \n" % (person1._id, person2._id, person2._id))
+
+    def log_not_infected(self, person1, person2):
+        with open('%s.txt' % self.file_name, 'a') as f:
+            f.write("person %s was not infected by person %s \n" % (person2._id, person1._id))
+
+
+
+    # def log_interaction(self, person1, person2, did_infect=None):
+    #
+    #     with open('%s.txt' % self.file_name, 'a') as f:
+    #     if person2.is_vaccinated:
+    #
+    #     if person2.infection != None:
+    #         f.write("person %s didn't infect person %s because person %s was already infected" % (person1._id, person2._id))
+    #     else:
+    #         f.write("person %s infected pers")
+
+
         # TODO: Finish this method.  The Simulation object should use this method to
         # log every interaction a sick individual has during each time step.  This method
         # should accomplish this by using the information from person1 (the infected person),

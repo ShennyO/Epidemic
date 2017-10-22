@@ -2,6 +2,7 @@ import random
 from person import Person
 from virus import Virus
 import pdb
+from logger import Logger
 
 
 
@@ -17,6 +18,13 @@ class Simulation(object):
         self.initial_vaccinated_percentage = initial_vaccinated_percentage
         self.population = []
         self.infected = 10
+        self.file_name = "epidemic.txt"
+
+        self.logger = Logger(self.file_name)
+
+        # pop_size, vacc_percentage, virus_name, mortality_rate,
+                          # basic_repro_num
+        self.logger.write_metadata(self.population_size, self.initial_vaccinated_percentage, self.virus_name, self.virus_mortality_rate, self.virus_spread_rate)
 
 
     def add_virus(self):
@@ -55,6 +63,7 @@ class Simulation(object):
                     person_id+=1
                     not_vacc+=1
                     self.population.append(person)
+
 
 
         print("Created Population")
@@ -98,8 +107,8 @@ class Simulation(object):
             if person.infection != None:
                 infected_ppl.append(person)
 
-        for index, person in enumerate(infected_ppl):
-            while random_added_ppl != 3000:
+        for index, infected_person in enumerate(infected_ppl):
+            while random_added_ppl != 10:
                 random_num = random.randint(0, len(alive_group)-1)
 
                 if random_num not in used_numbers:
@@ -121,10 +130,17 @@ class Simulation(object):
                         immune_strength = random.random()
                         if immune_strength<self.virus_spread_rate:
                             person_id = person._id
-
-                            self.population[person_id].infection = self.add_virus()
-
-                            randoms_infected_count +=1
+                            #The logger function should be called right below the add_virus
+                            if person.infection == None:
+                                self.population[person_id].infection = self.add_virus()
+                                self.logger.log_infected(infected_person, person)
+                                randoms_infected_count +=1
+                            else:
+                                self.logger.log_already_infected(infected_person, person)
+                        else:
+                            self.logger.log_not_infected(person, infected_person)
+                    else:
+                        self.logger.log_vaccinated(infected_person, person)
 
 
 
@@ -271,8 +287,9 @@ class Simulation(object):
 
 
 
-sim = Simulation(10000, 100, "Malaria", .99, .99, .25)
+sim = Simulation(500, 50, "Malaria", .30, .15, .25)
 sim.main()
+
 # sim.create_population()
 # sim.exposure()
 # sim.die()
